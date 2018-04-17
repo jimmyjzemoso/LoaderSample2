@@ -1,4 +1,4 @@
-package app.jimmy.loadersample
+package app.jimmy.loadersample.Models
 
 /**
  * @author Jimmy
