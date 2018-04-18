@@ -1,11 +1,10 @@
 package app.jimmy.loadersample
 
+import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import app.jimmy.loadersample.Models.ContactData
 
 /**
@@ -15,8 +14,11 @@ import app.jimmy.loadersample.Models.ContactData
 class ContactsAdapter(private var myDataList: List<ContactData>) : RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_item,parent,false)
-        return ViewHolder(view)
+        //val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_item,parent,false)
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding : ViewDataBinding =
+                DataBindingUtil.inflate(layoutInflater, R.layout.contact_item, parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -24,18 +26,25 @@ class ContactsAdapter(private var myDataList: List<ContactData>) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.name.text = myDataList[position].name
-        holder.phoneNumber.text = myDataList[position].phoneNumber
+        holder.bind(myDataList[position])
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        var name:TextView = itemView.findViewById(R.id.name)
-        var phoneNumber:TextView = itemView.findViewById(R.id.phone_number)
+    class ViewHolder constructor(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root){
+
+        fun bind(data : ContactData){
+            binding.setVariable(BR.contact,data)
+            binding.executePendingBindings()
+        }
     }
 
-    fun updateRecyclerView(contactList: List<ContactData>) {
+    fun setContactList(contactList: List<ContactData>) {
+          this.myDataList = contactList
+          notifyDataSetChanged()
+    }
+
+  /*  fun updateRecyclerView(contactList: List<ContactData>) {
         myDataList = contactList
         Log.d("Contacts",contactList.toString())
         notifyDataSetChanged()
-    }
+    }*/
 }

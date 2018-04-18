@@ -2,15 +2,14 @@ package app.jimmy.loadersample.Views
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.databinding.ObservableList
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.widget.Toast
 import app.jimmy.loadersample.ContactsAdapter
-import app.jimmy.loadersample.Interfaces.ViewCallback
 import app.jimmy.loadersample.Models.ContactData
 import app.jimmy.loadersample.Models.Source.ContactSystemImpl
 import app.jimmy.loadersample.R
@@ -18,8 +17,7 @@ import app.jimmy.loadersample.ViewModels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-
-class MainActivity : AppCompatActivity(), ViewCallback{
+class MainActivity : AppCompatActivity(){
     private lateinit var viewAdapter: ContactsAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var myDataset = ArrayList<ContactData>()
@@ -40,7 +38,7 @@ class MainActivity : AppCompatActivity(), ViewCallback{
         }
         viewAdapter.notifyDataSetChanged()
         val contactActions = ContactSystemImpl(applicationContext)
-        viewModel = MainActivityViewModel(contactActions, this)
+        viewModel = MainActivityViewModel(contactActions)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -49,6 +47,29 @@ class MainActivity : AppCompatActivity(), ViewCallback{
         }else {
               viewModel.getContacts()
         }
+       viewModel.contactList.addOnListChangedCallback(
+                object :ObservableList.OnListChangedCallback<ObservableList<ContactData>>() {
+                    override fun onItemRangeRemoved(sender: ObservableList<ContactData>?, positionStart: Int, itemCount: Int) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onItemRangeMoved(sender: ObservableList<ContactData>?, fromPosition: Int, toPosition: Int, itemCount: Int) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onItemRangeInserted(sender: ObservableList<ContactData>?, positionStart: Int, itemCount: Int) {
+                        viewAdapter.setContactList(viewModel.contactList)
+                    }
+
+                    override fun onItemRangeChanged(sender: ObservableList<ContactData>?, positionStart: Int, itemCount: Int) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onChanged(sender: ObservableList<ContactData>?) {
+                        viewAdapter.setContactList(viewModel.contactList)
+                    }
+
+                })
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -59,13 +80,8 @@ class MainActivity : AppCompatActivity(), ViewCallback{
         }
     }
 
-    override fun contactsLoadFailed() {
-        Toast.makeText(this,"Contacts Load failed",Toast.LENGTH_SHORT).show()
-    }
 
-    override fun updateRecyclerView(contactList: List<ContactData>) {
-       viewAdapter.updateRecyclerView(contactList)
-    }
+
 
     //endregion
  /*   //region Other Methods

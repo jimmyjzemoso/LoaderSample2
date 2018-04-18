@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout >
+    <data>
+        <variable
+            name="contact"
+            type="app.jimmy.loadersample.Models.ContactData"/>
+        <variable
+            name="contact1"
+            type="app.jimmy.loadersample.Models.ContactData"/>
+    </data>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -11,13 +20,14 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:gravity="center"
-        android:text="text"/>
+        android:text="@{contact.name}"/>
     <TextView
         android:id="@+id/phone_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:gravity="center"
-        android:text="phoneNumber"/>
+        android:text="@{contact.phoneNumber}"/>
 
 </LinearLayout>
+</layout>
