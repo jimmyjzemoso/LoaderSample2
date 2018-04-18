@@ -2,13 +2,16 @@ package app.jimmy.loadersample.Views
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.databinding.DataBindingUtil
 import android.databinding.ObservableList
+import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import app.jimmy.loadersample.BR
 import app.jimmy.loadersample.ContactsAdapter
 import app.jimmy.loadersample.Models.ContactData
 import app.jimmy.loadersample.Models.Source.ContactSystemImpl
@@ -28,7 +31,7 @@ class MainActivity : AppCompatActivity(){
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding : ViewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         viewManager = LinearLayoutManager(this)
         viewAdapter = ContactsAdapter(myDataset)
         contact_list.apply {
@@ -39,6 +42,7 @@ class MainActivity : AppCompatActivity(){
         viewAdapter.notifyDataSetChanged()
         val contactActions = ContactSystemImpl(applicationContext)
         viewModel = MainActivityViewModel(contactActions)
+        binding.setVariable(BR.contactViewModel,viewModel)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -47,6 +51,7 @@ class MainActivity : AppCompatActivity(){
         }else {
               viewModel.getContacts()
         }
+
        viewModel.contactList.addOnListChangedCallback(
                 object :ObservableList.OnListChangedCallback<ObservableList<ContactData>>() {
                     override fun onItemRangeRemoved(sender: ObservableList<ContactData>?, positionStart: Int, itemCount: Int) {
